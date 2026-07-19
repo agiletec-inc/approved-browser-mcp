@@ -32,7 +32,7 @@ approved-browser-mcpはローカルDocker Compose内でPlaywright MCPと専用Ch
 - ブラウザドライバーの再実装
 - Chrome DevTools MCPやBrowser MCPへの対応
 - commit承認フロー
-- AIris MCP Gateway統合
+- AIRIS MCP Gateway統合
 
 ## Acceptance criteria
 

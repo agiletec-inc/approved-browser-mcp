@@ -35,12 +35,12 @@ Claude Code / Claude Desktop / Cursor
        ローカルDocker内の専用Chromium
 ```
 
-AIris MCP Gatewayへ統合する場合:
+AIRIS MCP Gatewayへ統合する場合:
 
 ```text
 AI client
    ▼
-AIris MCP Gateway
+AIRIS MCP Gateway
    ├─ discovery / lifecycle
    ├─ approved-browser-mcp
    └─ ローカルDocker Compose
@@ -51,7 +51,7 @@ AIris MCP Gateway
       専用プロファイルVolume
 ```
 
-GatewayはローカルComposeスタックの発見・起動・停止だけを担当する。承認判断とブラウザ操作のポリシーはこのリポジトリに置く。
+AIRIS MCP Gatewayは汎用MCPの登録・発見・ルーティング・ライフサイクルを担当する。承認判断とブラウザ操作のポリシーはapproved-browser-mcpに置く。
 
 ### ローカルDockerランタイム
 
@@ -87,7 +87,7 @@ GatewayはローカルComposeスタックの発見・起動・停止だけを担
 - Cookie・セッションのブラウザ内保持
 - DOM、アクセシビリティツリー、スクリーンショットの取得
 
-### AIris MCP Gatewayが所有するもの
+### AIRIS MCP Gatewayが所有するもの
 
 - MCPサーバーの登録・発見・ルーティング
 - COLD起動とアイドル停止
@@ -95,13 +95,13 @@ GatewayはローカルComposeスタックの発見・起動・停止だけを担
 - プロセスのヘルスチェック
 - Playwright MCPを非公開の子プロセスとして起動するライフサイクル
 
-### AIris OSが所有するもの（将来の企業統制）
+### 利用側プロダクトが所有するもの
 
-- 組織全体のポリシー配布
+- AIris OSやAIris Suiteが必要とする組織全体のポリシー配布
 - SSO、RBAC、端末・ユーザー管理
 - 承認者・承認経路の組織設定
 - 長期監査ログ、検索、SIEM連携
-- サイト別の業務アダプター配布とサポート
+- Relationship Graphなどの業務データと推薦
 
 ## 5. 操作モデル
 
@@ -120,7 +120,7 @@ HTTPメソッドではなく、外部状態への影響で分類する。
 1. AIが操作内容を準備する。
 2. 対象サイト、アカウント、入力値、影響をユーザーへ提示する。
 3. ユーザーが承認する。
-4. ローカルUI、OSダイアログ、またはAIris OSの信頼済み承認経路でユーザーが承認する。AI向けMCPツールから承認できてはならない。
+4. ローカルUI、OSダイアログ、または利用側プロダクトの信頼済み承認経路でユーザーが承認する。AI向けMCPツールから承認できてはならない。
 5. 承認内容に結び付いた一回限りの承認トークンでバックエンドへ渡す。
 6. 実行結果と `receipt`（対象、アカウント、結果URL、実行日時、画面証跡）を返し、監査ログへ記録する。
 
@@ -207,7 +207,7 @@ MCPには `browser_action_approve` を公開しない。AIから承認できな�
 browser_action_status
 ```
 
-`browser_action_commit` は、ローカルUIまたはAIris OSの信頼済み承認経路で発行された承認トークンなしでは呼び出せない。承認トークンは期限切れまたは一回実行後に無効化する。
+`browser_action_commit` は、ローカルUIまたは利用側プロダクトの信頼済み承認経路で発行された承認トークンなしでは呼び出せない。承認トークンは期限切れまたは一回実行後に無効化する。
 
 GatewayにはPlaywright MCPを別の公開サーバーとして登録しない。`approved-browser-mcp`が非公開stdio子プロセスとして起動し、クライアントから見えるMCPサーバーは`approved-browser-mcp`だけにする。
 
@@ -264,7 +264,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 - 実行前後の監査ログ
 - サイト固有のcommitアダプター
 
-### P3: AIris MCP Gateway統合
+### P3: AIRIS MCP Gateway統合
 
 - COLDプロバイダー登録（approved-browser-mcpのみ公開）
 - host-required capability
@@ -291,4 +291,4 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 - 名前付きアカウントと実ログインアカウントが不一致ならcommitできない
 - 承認トークンを再利用できない
 - Gatewayなしで単独起動できる
-- AIris MCP Gateway経由でCOLD起動できる
+- AIRIS MCP Gateway経由でCOLD起動できる

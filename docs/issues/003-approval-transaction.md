@@ -16,7 +16,7 @@ AIが投稿、購入、予約、削除などの外部状態変更を自分自身
 
 ## Expected behavior
 
-AIは操作をprepareできるが、承認はローカルUI・OSダイアログ・AIris OSの信頼済み経路でのみ発行される。commitは操作ハッシュ、アカウント、origin、プロファイル、セッション、期限に一致する一回限りのトークンが必要である。
+AIは操作をprepareできるが、承認はローカルUI・OSダイアログ・利用側プロダクトの信頼済み経路でのみ発行される。commitは操作ハッシュ、アカウント、origin、プロファイル、セッション、期限に一致する一回限りのトークンが必要である。
 
 ## Scope
 
@@ -28,7 +28,7 @@ AIは操作をprepareできるが、承認はローカルUI・OSダイアログ�
 
 ## Non-goals
 
-- 組織の承認者管理やSSO（AIris OS）
+- 組織の承認者管理やSSO（利用側プロダクト）
 - ブラウザ操作・サイト別投稿処理
 - 自動承認や承認ダイアログの省略
 
@@ -56,4 +56,4 @@ AIは操作をprepareできるが、承認はローカルUI・OSダイアログ�
 
 ## Clarifications and assumptions
 
-- MVP trusted approval channel is local-only; AIris OS integration is a later issuer.
+- MVP trusted approval channel is local-only; an external product may become a later issuer.

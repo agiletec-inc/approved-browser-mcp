@@ -1,13 +1,13 @@
-# integration: AIris MCP Gatewayから承認ブラウザをCOLD起動する
+# integration: AIRIS MCP Gatewayから承認ブラウザをCOLD起動する
 
 ## Problem / outcome
 
-approved-browser-mcpとPlaywright MCPを個別にAIクライアントへ登録すると、生のPlaywrightツールを迂回でき、MCP設定とトークン使用量も分散する。AIris MCP Gatewayから承認層だけを公開し、Playwrightを非公開子プロセスとして起動する必要がある。
+approved-browser-mcpとPlaywright MCPを個別にAIクライアントへ登録すると、生のPlaywrightツールを迂回でき、MCP設定とトークン使用量も分散する。AIRIS MCP Gatewayから承認層だけを公開し、Playwrightを非公開子プロセスとして起動する必要がある。
 
 ## Evidence and current behavior
 
-- `docs/design.md` §3・§4 はGatewayの責務を発見・ライフサイクルに限定し、Playwrightを非公開にする構成を定義している。
-- 現在のAIris MCP Gatewayにはこの新規プロバイダー登録は存在しない。
+- `docs/design.md` §3・§4 はAIRIS MCP Gatewayの責務を発見・ライフサイクルに限定し、Playwrightを非公開にする構成を定義している。
+- 現在のAIRIS MCP Gatewayにはこの新規プロバイダー登録は存在しない。
 
 ## Reproduction or baseline
 
@@ -15,7 +15,7 @@ approved-browser-mcpとPlaywright MCPを個別にAIクライアントへ登録�
 
 ## Expected behavior
 
-AIris MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動し、アイドル停止する。approved-browser-mcpはローカルDocker Compose内のPlaywright MCP・Chromium・noVNCを所有し、Gatewayの公開カタログにはPlaywrightの生ツールを直接現れさせない。
+AIRIS MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動し、アイドル停止する。approved-browser-mcpはローカルDocker Compose内のPlaywright MCP・Chromium・noVNCを所有し、Gatewayの公開カタログにはPlaywrightの生ツールを直接現れさせない。
 
 ## Scope
 
@@ -30,7 +30,7 @@ AIris MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動
 
 - Gatewayへの承認ロジック追加
 - Gatewayへのブラウザドライバー追加
-- AIris OSの組織管理機能
+- 利用側プロダクトの組織管理機能
 
 ## Acceptance criteria
 
@@ -57,4 +57,4 @@ AIris MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動
 ## Clarifications and assumptions
 
 - Gateway integration is optional for standalone OSS use.
-- The first integration targets the existing AIris MCP Gateway repository.
+- The first integration targets the existing AIRIS MCP Gateway repository.
