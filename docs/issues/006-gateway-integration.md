@@ -15,11 +15,12 @@ approved-browser-mcpとPlaywright MCPを個別にAIクライアントへ登録�
 
 ## Expected behavior
 
-AIris MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動し、アイドル停止する。Playwright MCPはapproved-browser-mcpの子プロセスとしてのみ起動し、Gatewayの公開カタログには直接現れない。
+AIris MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動し、アイドル停止する。approved-browser-mcpはローカルDocker Compose内のPlaywright MCP・Chromium・noVNCを所有し、Gatewayの公開カタログにはPlaywrightの生ツールを直接現れさせない。
 
 ## Scope
 
 - Gatewayプロバイダー定義
+- ローカルDocker Composeスタックの起動・停止
 - host-required capability
 - COLD起動・アイドル停止
 - tools/listの公開境界

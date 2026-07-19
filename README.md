@@ -7,6 +7,7 @@ Playwright MCPの上に、承認・権限・監査の境界を追加するロー
 ## 目的
 
 - Playwright MCPをブラウザ操作の実行エンジンとして利用する
+- 専用ChromiumはローカルDocker内で起動する
 - ユーザーがログインした専用ブラウザプロファイルを、個人ブラウザから分離する
 - `observe` / `interact` / `commit` を操作の影響度で分類する
 - 投稿、購入、予約、削除などを `prepare → user approval → commit` にする
@@ -22,7 +23,7 @@ Playwright MCPの上に、承認・権限・監査の境界を追加するロー
 - サイトごとのスクレイパー
 - 認証・課金・CAPTCHAの回避
 
-ブラウザ操作本体はPlaywright MCPに委譲します。Chrome DevTools MCPなどへの対応は、必要性が確認された場合の将来拡張です。
+ブラウザ操作本体はPlaywright MCPに委譲します。専用ChromiumとPlaywright MCPはローカルDocker内で動かし、Chrome DevTools MCPなどへの対応は将来拡張とします。
 
 ## AIris MCP Gatewayとの関係
 

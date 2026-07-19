@@ -32,7 +32,7 @@ Claude Code / Claude Desktop / Cursor
        Playwright MCP
                  │
                  ▼
-       専用Chromiumプロファイル
+       ローカルDocker内の専用Chromium
 ```
 
 AIris MCP Gatewayへ統合する場合:
@@ -43,12 +43,27 @@ AI client
 AIris MCP Gateway
    ├─ discovery / lifecycle
    ├─ approved-browser-mcp
-   └─ Playwright MCP
+   └─ ローカルDocker Compose
+          ├─ approved-browser-mcp
+          ├─ Playwright MCP
+          └─ Chromium + noVNC
           ▼
-      host-native Chromium
+      専用プロファイルVolume
 ```
 
-Gatewayはプロセスの発見・起動・停止だけを担当する。承認判断とブラウザ操作のポリシーはこのリポジトリに置く。
+GatewayはローカルComposeスタックの発見・起動・停止だけを担当する。承認判断とブラウザ操作のポリシーはこのリポジトリに置く。
+
+### ローカルDockerランタイム
+
+- Chromium、Playwright MCP、approved-browser-mcpはローカルDocker Composeで起動する
+- named accountごとに専用のpersistent volumeを割り当てる
+- ホストのChrome／Arcプロファイルをマウントしない
+- ブラウザ画面はnoVNCまたは同等のローカル画面だけでユーザーへ引き渡す
+- noVNCはloopback bindのみとし、LANや外部へ公開しない
+- CAPTCHA、2FA、再認証はローカル画面でユーザーが処理する
+- root filesystemは読み取り専用を基本とし、書き込み先はプロファイルと一時領域に限定する
+- ダウンロード、アップロード、ホストファイル参照、外部アプリ起動は既定拒否する
+- profile volumeとaudit volumeはnamed volumeで分離し、Cookieをホストの任意パスへコピーしない
 
 ## 4. 責務境界
 
@@ -67,7 +82,7 @@ Gatewayはプロセスの発見・起動・停止だけを担当する。承認�
 
 ### Playwright MCPが所有するもの
 
-- Chromiumの起動・接続・終了
+- Docker内Chromiumへの接続・終了
 - Playwrightによるページ操作
 - Cookie・セッションのブラウザ内保持
 - DOM、アクセシビリティツリー、スクリーンショットの取得
@@ -198,7 +213,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 
 ## 10. セッションとプロファイル
 
-ブラウザプロファイルはバックエンドMCPまたはその拡張機能が管理する。Approved Browser MCPは、プロファイル識別子、利用許可、排他ロック、ライフサイクルを管理するが、Cookieを直接読み出さない。
+ブラウザプロファイルはDocker内のPlaywright MCPが管理する。Approved Browser MCPは、プロファイル識別子、利用許可、排他ロック、ライフサイクルを管理するが、Cookieを直接読み出さない。
 
 ```text
 ~/Library/Application Support/approved-browser-mcp/
@@ -207,7 +222,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
   audit/
 ```
 
-パスワードはMCP引数にせず、ログイン・CAPTCHA・2FA・再認証はユーザーへ引き渡す。
+パスワードはMCP引数にせず、ログイン・CAPTCHA・2FA・再認証はローカルnoVNC画面へユーザーを引き渡す。
 
 ## 11. 実行制限
 
@@ -224,6 +239,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 
 - MCPバックエンド接続アダプター
 - Playwright MCPの非公開子プロセス化
+- ローカルDocker ComposeとChromium/noVNCの起動
 - クライアント・プロファイル・ドメイン許可制
 - 危険URL拒否
 - プロファイル排他ロック
