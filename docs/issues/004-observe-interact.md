@@ -51,7 +51,7 @@ Semantic操作を第一経路とし、取得不能なUIだけVisionへフォー�
 
 ## Risks, dependencies, rollout
 
-- Dependencies: Issues #001 and #002.
+- Dependencies: Issues #1 and #2.
 - Security: screenshots may contain sensitive data and obey disclosure policy.
 - Rollout: Vision support may remain disabled until screenshot policy is configured.
 

@@ -50,7 +50,7 @@ AIは操作をprepareできるが、承認はローカルUI・OSダイアログ�
 
 ## Risks, dependencies, rollout
 
-- Dependencies: Issues #001 and #002.
+- Dependencies: Issues #1 and #2.
 - Security: approval tokens must not be accepted from ordinary MCP tool arguments without a trusted issuer.
 - Rollout: keep commit disabled until external approval is wired and tests pass.
 

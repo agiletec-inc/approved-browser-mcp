@@ -49,7 +49,7 @@ AIris MCP Gatewayはapproved-browser-mcpをCOLDプロバイダーとして起動
 
 ## Risks, dependencies, rollout
 
-- Dependencies: Issues #001, #002, and #003.
+- Dependencies: Issues #1, #2, and #3.
 - Rollout: register as COLD and keep the existing Gateway behavior unchanged.
 - Security: Gateway config must not separately register the Playwright backend.
 

@@ -49,7 +49,7 @@
 
 ## Risks, dependencies, rollout
 
-- Dependencies: Issues #002, #003, and #004.
+- Dependencies: Issues #2, #3, and #4.
 - Platform policies differ; each adapter requires a documented allowed-operation boundary.
 - Start with one adapter and keep others disabled.
 

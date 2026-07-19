@@ -52,7 +52,7 @@
 
 ## Risks, dependencies, rollout
 
-- Dependency: Issue #001.
+- Dependency: Issue #1.
 - Security: fail closed when configuration is missing or malformed.
 - Data: do not persist page bodies by default.
 
