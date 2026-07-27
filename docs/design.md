@@ -32,23 +32,38 @@ Claude Code / Claude Desktop / Cursor
        Playwright MCP
                  │
                  ▼
-       専用Chromiumプロファイル
+       ローカルDocker内の専用Chromium
 ```
 
-AIris MCP Gatewayへ統合する場合:
+AIRIS MCP Gatewayへ統合する場合:
 
 ```text
 AI client
    ▼
-AIris MCP Gateway
+AIRIS MCP Gateway
    ├─ discovery / lifecycle
    ├─ approved-browser-mcp
-   └─ Playwright MCP
+   └─ ローカルDocker Compose
+          ├─ approved-browser-mcp
+          ├─ Playwright MCP
+          └─ Chromium + noVNC
           ▼
-      host-native Chromium
+      専用プロファイルVolume
 ```
 
-Gatewayはプロセスの発見・起動・停止だけを担当する。承認判断とブラウザ操作のポリシーはこのリポジトリに置く。
+AIRIS MCP Gatewayは汎用MCPの登録・発見・ルーティング・ライフサイクルを担当する。承認判断とブラウザ操作のポリシーはapproved-browser-mcpに置く。
+
+### ローカルDockerランタイム
+
+- Chromium、Playwright MCP、approved-browser-mcpはローカルDocker Composeで起動する
+- named accountごとに専用のpersistent volumeを割り当てる
+- ホストのChrome／Arcプロファイルをマウントしない
+- ブラウザ画面はnoVNCまたは同等のローカル画面だけでユーザーへ引き渡す
+- noVNCはloopback bindのみとし、LANや外部へ公開しない
+- CAPTCHA、2FA、再認証はローカル画面でユーザーが処理する
+- root filesystemは読み取り専用を基本とし、書き込み先はプロファイルと一時領域に限定する
+- ダウンロード、アップロード、ホストファイル参照、外部アプリ起動は既定拒否する
+- profile volumeとaudit volumeはnamed volumeで分離し、Cookieをホストの任意パスへコピーしない
 
 ## 4. 責務境界
 
@@ -67,12 +82,12 @@ Gatewayはプロセスの発見・起動・停止だけを担当する。承認�
 
 ### Playwright MCPが所有するもの
 
-- Chromiumの起動・接続・終了
+- Docker内Chromiumへの接続・終了
 - Playwrightによるページ操作
 - Cookie・セッションのブラウザ内保持
 - DOM、アクセシビリティツリー、スクリーンショットの取得
 
-### AIris MCP Gatewayが所有するもの
+### AIRIS MCP Gatewayが所有するもの
 
 - MCPサーバーの登録・発見・ルーティング
 - COLD起動とアイドル停止
@@ -80,13 +95,13 @@ Gatewayはプロセスの発見・起動・停止だけを担当する。承認�
 - プロセスのヘルスチェック
 - Playwright MCPを非公開の子プロセスとして起動するライフサイクル
 
-### AIris OSが所有するもの（将来の企業統制）
+### 利用側プロダクトが所有するもの
 
-- 組織全体のポリシー配布
+- AIris OSやAIris Suiteが必要とする組織全体のポリシー配布
 - SSO、RBAC、端末・ユーザー管理
 - 承認者・承認経路の組織設定
 - 長期監査ログ、検索、SIEM連携
-- サイト別の業務アダプター配布とサポート
+- Relationship Graphなどの業務データと推薦
 
 ## 5. 操作モデル
 
@@ -105,7 +120,7 @@ HTTPメソッドではなく、外部状態への影響で分類する。
 1. AIが操作内容を準備する。
 2. 対象サイト、アカウント、入力値、影響をユーザーへ提示する。
 3. ユーザーが承認する。
-4. ローカルUI、OSダイアログ、またはAIris OSの信頼済み承認経路でユーザーが承認する。AI向けMCPツールから承認できてはならない。
+4. ローカルUI、OSダイアログ、または利用側プロダクトの信頼済み承認経路でユーザーが承認する。AI向けMCPツールから承認できてはならない。
 5. 承認内容に結び付いた一回限りの承認トークンでバックエンドへ渡す。
 6. 実行結果と `receipt`（対象、アカウント、結果URL、実行日時、画面証跡）を返し、監査ログへ記録する。
 
@@ -192,13 +207,13 @@ MCPには `browser_action_approve` を公開しない。AIから承認できな�
 browser_action_status
 ```
 
-`browser_action_commit` は、ローカルUIまたはAIris OSの信頼済み承認経路で発行された承認トークンなしでは呼び出せない。承認トークンは期限切れまたは一回実行後に無効化する。
+`browser_action_commit` は、ローカルUIまたは利用側プロダクトの信頼済み承認経路で発行された承認トークンなしでは呼び出せない。承認トークンは期限切れまたは一回実行後に無効化する。
 
 GatewayにはPlaywright MCPを別の公開サーバーとして登録しない。`approved-browser-mcp`が非公開stdio子プロセスとして起動し、クライアントから見えるMCPサーバーは`approved-browser-mcp`だけにする。
 
 ## 10. セッションとプロファイル
 
-ブラウザプロファイルはバックエンドMCPまたはその拡張機能が管理する。Approved Browser MCPは、プロファイル識別子、利用許可、排他ロック、ライフサイクルを管理するが、Cookieを直接読み出さない。
+ブラウザプロファイルはDocker内のPlaywright MCPが管理する。Approved Browser MCPは、プロファイル識別子、利用許可、排他ロック、ライフサイクルを管理するが、Cookieを直接読み出さない。
 
 ```text
 ~/Library/Application Support/approved-browser-mcp/
@@ -207,7 +222,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
   audit/
 ```
 
-パスワードはMCP引数にせず、ログイン・CAPTCHA・2FA・再認証はユーザーへ引き渡す。
+パスワードはMCP引数にせず、ログイン・CAPTCHA・2FA・再認証はローカルnoVNC画面へユーザーを引き渡す。
 
 ## 11. 実行制限
 
@@ -224,6 +239,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 
 - MCPバックエンド接続アダプター
 - Playwright MCPの非公開子プロセス化
+- ローカルDocker ComposeとChromium/noVNCの起動
 - クライアント・プロファイル・ドメイン許可制
 - 危険URL拒否
 - プロファイル排他ロック
@@ -248,7 +264,7 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 - 実行前後の監査ログ
 - サイト固有のcommitアダプター
 
-### P3: AIris MCP Gateway統合
+### P3: AIRIS MCP Gateway統合
 
 - COLDプロバイダー登録（approved-browser-mcpのみ公開）
 - host-required capability
@@ -275,4 +291,4 @@ GatewayにはPlaywright MCPを別の公開サーバーとして登録しない�
 - 名前付きアカウントと実ログインアカウントが不一致ならcommitできない
 - 承認トークンを再利用できない
 - Gatewayなしで単独起動できる
-- AIris MCP Gateway経由でCOLD起動できる
+- AIRIS MCP Gateway経由でCOLD起動できる
